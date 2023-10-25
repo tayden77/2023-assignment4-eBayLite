@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import ListingForm
-from .models import Listing
-
+from .models import Listing, Category
+from django.views import View
 from .models import User
 
 
@@ -65,16 +65,18 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
     
-    # Listing View
+    
 def create_listing(request):
-    if request.method == "Post":
+    if request.method == "POST":
         form = ListingForm(request.POST)
         if form.is_valid():
             listing = form.save(commit=False)
             listing.creator = request.user
             listing.save()
             return redirect('index')
+        else: 
+            print(form.errors)
+            return render(request, 'auctions/create_listing.html', {'from':form, 'form_errors':form.errors})
     else:
         form = ListingForm()
     return render(request, 'auctions/create_listing.html', {'form': form})
-

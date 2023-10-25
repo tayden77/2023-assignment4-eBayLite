@@ -4,10 +4,17 @@
 <h2>Active Listings</h2>
 
 <article>
-    <section>Listing 1</section>
-
-    <section>Listing 2</section>
-
-    <section>Listing 3</section>
+    {% for listing in listings %}
+        <section>
+            <h3>{{ listing.title }}</h3>
+            <p>{{ listing.description }}</p>
+            <p>Starting Bid: ${{ listing.starting_bid }}</p>
+            {% if listing.image_url %}
+                <img src="{{ listing.image_url }}" alt="{{ listing.title }}">
+            {% endif %}
+        </section>
+    {% empty %}
+        <p>No active listings found...</p>
+    {% endfor %}
 </article>
 {% endblock %}

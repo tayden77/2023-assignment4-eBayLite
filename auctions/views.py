@@ -1,17 +1,44 @@
+from typing import Any
 from django.contrib.auth import authenticate, login, logout
-from django.db import IntegrityError
+from django.db import IntegrityError, models
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse, reverse_lazy
 from .forms import ListingForm
 from .models import Listing, Category
 from django.views import View
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import User
 
 
 def index(request):
     listings = Listing.objects.filter(is_active=True)
     return render(request, "auctions/index.html", {'listings': listings})
+
+
+class ListingUpdateView(UpdateView):
+    model = Listing
+    form_class = ListingForm
+    template_name = 'auctions/listing_edit.html'
+    context_object_name = 'listing'
+
+    def get_success_url(self):
+        return reverse_lazy('listing-edit', kwargs={'pk': self.object.pk})
+    
+    def get_queryset(self):
+        return self.model.objects.filter(creator=self.request.user)
+    
+
+class ListingDeleteView(DeleteView):
+    model = Listing
+    form_class = ListingForm
+    template_name = 'auctions/listing_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy('index', kwargs={'pk': self.object.pk})    
+
+    def get_queryset(self):
+        return self.model.objects.filter(creator=self.request.user) 
 
 
 def login_view(request):
@@ -68,10 +95,11 @@ def register(request):
     
 def create_listing(request):
     if request.method == "POST":
-        form = ListingForm(request.POST)
+        form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
             listing = form.save(commit=False)
             listing.creator = request.user
+            listing.current_bid = listing.starting_bid
             listing.save()
             return redirect('index')
         else: 
@@ -80,3 +108,7 @@ def create_listing(request):
     else:
         form = ListingForm()
     return render(request, 'auctions/create_listing.html', {'form': form})
+
+def listing_detail(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    return render(request, 'auctions/listing_detail.html', {'listing': listing})

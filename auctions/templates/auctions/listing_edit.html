@@ -1,11 +1,11 @@
 {% extends "auctions/layout.html" %}
 
 {% block main %}
-<h2>Create A New Listing</h2>
+<h2>Edit Listing</h2>
 
 <article>
     <section>
-        <form method="post" action="{% url 'create-listing' %}" enctype="multipart/form-data">
+        <form method="post" action="{% url 'listing-edit' pk=listing.pk %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
                 <label for="form.title.id_for_label">Title:</label>
@@ -27,7 +27,7 @@
                 <label for="form.image_url.id_for_label">Image Upload</label>
                 {{ form.image }}
             </div>
-            <input type="submit" value="Create Listing" />
+            <input type="submit" value="Edit Listing" />
         </form>
     </section>
 </article>

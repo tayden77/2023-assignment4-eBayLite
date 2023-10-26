@@ -1,0 +1,9 @@
+{% extends "auctions/layout.html" %}
+
+{% block main %}
+  <h2>Confirm deletion of {{ object.title }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirm</button>
+  </form>
+{% endblock %}

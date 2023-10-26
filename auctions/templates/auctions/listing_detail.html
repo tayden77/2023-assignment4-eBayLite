@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+
+{% block main %}
+<section>
+    <h2>{{ listing.title }}</h2>
+    <p>{{ listing.creator }}</p>
+    <p>{{ listing.description }}</p>
+    <p>{{ listing.category }}</p>
+    <p>Starting Bid: ${{ listing.starting_bid }}</p>
+    <p>Current Bid: ${{ listing.current_bid }}</p>
+    {% if listing.image %}
+        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" width="75%">
+    {% else %}
+        <p>No image available</p>
+    {% endif %}
+    {% if user.is_authenticated and listing.creator == user %}
+        <a href="{% url 'listing-edit' pk=listing.pk %}">Edit</a>
+        <a href="{% url 'listing-delete' pk=listing.pk %}">Delete</a>
+    {% endif %}
+</section>
+{% endblock %}

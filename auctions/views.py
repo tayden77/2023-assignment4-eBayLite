@@ -23,7 +23,7 @@ class ListingUpdateView(UpdateView):
     context_object_name = 'listing'
 
     def get_success_url(self):
-        return reverse_lazy('listing-edit', kwargs={'pk': self.object.pk})
+        return reverse_lazy('listing-detail', kwargs={'listing_id': self.object.pk})
     
     def get_queryset(self):
         return self.model.objects.filter(creator=self.request.user)
@@ -31,11 +31,10 @@ class ListingUpdateView(UpdateView):
 
 class ListingDeleteView(DeleteView):
     model = Listing
-    form_class = ListingForm
     template_name = 'auctions/listing_confirm_delete.html'
 
     def get_success_url(self):
-        return reverse_lazy('index', kwargs={'pk': self.object.pk})    
+        return reverse_lazy('index')    
 
     def get_queryset(self):
         return self.model.objects.filter(creator=self.request.user) 

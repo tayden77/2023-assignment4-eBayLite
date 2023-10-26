@@ -1,0 +1,9 @@
+{% extends "auctions/layout.html" %}
+
+{% block main %}
+  <h2>Are you sure you want to close bidding on {{ object.title }}?</h2>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Close Bidding</button>
+  </form>
+{% endblock %}

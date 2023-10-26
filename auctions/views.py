@@ -1,15 +1,15 @@
 from typing import Any
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError, models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
-from .forms import ListingForm
-from .models import Listing, Category
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import User
-
+from .models import User, Listing, Category, Bid
+from .forms import ListingForm, BidForm
+import logging
 
 def index(request):
     listings = Listing.objects.filter(is_active=True)
@@ -23,7 +23,7 @@ class ListingUpdateView(UpdateView):
     context_object_name = 'listing'
 
     def get_success_url(self):
-        return reverse_lazy('listing-detail', kwargs={'listing_id': self.object.pk})
+        return reverse_lazy('listing-detail', kwargs={'pk': self.object.pk})
     
     def get_queryset(self):
         return self.model.objects.filter(creator=self.request.user)
@@ -38,7 +38,38 @@ class ListingDeleteView(DeleteView):
 
     def get_queryset(self):
         return self.model.objects.filter(creator=self.request.user) 
+    
 
+class PlaceBidView(View):
+    def post(self, request, pk):
+        logging.info(f'Listing ID: {pk}')
+        listing = get_object_or_404(Listing, id=pk)
+        if not listing.is_active:
+                messages.error(request, 'Bidding on this item is closed')
+                print(form.errors)
+                return redirect('listing-detail', pk=listing.id)
+        form = BidForm(request.POST, initial={'listing_id': pk})
+        if form.is_valid():
+            bid = form.save(commit=False)
+            bid.listing = listing
+            bid.user = request.user
+            bid.save()
+            return redirect('place-bid', pk=listing.id)
+        else:
+            messages.error(request, 'There was a problem with your bid entry. Please try again')
+            
+            return render(request, 'listing_detail.html', {'form': form})
+        
+
+class CloseBiddingView(View):
+    def post(self, request, pk):
+        listing = get_object_or_404(Listing, id=pk)
+        if not request.user.is_authenticated or request.user != listing.creator:
+            messages.error(request, 'You are not authorized. Please create an account or log-in.')
+            return redirect('listing-detail', pk=listing.id)
+        listing.is_active = False
+        listing.save()
+        return redirect('listing-detail', pk=listing.id)
 
 def login_view(request):
     if request.method == "POST":
@@ -103,11 +134,12 @@ def create_listing(request):
             return redirect('index')
         else: 
             print(form.errors)
-            return render(request, 'auctions/create_listing.html', {'from':form, 'form_errors':form.errors})
+            return render(request, 'auctions/create_listing.html', {'form':form, 'form_errors':form.errors})
     else:
         form = ListingForm()
     return render(request, 'auctions/create_listing.html', {'form': form})
 
-def listing_detail(request, listing_id):
-    listing = get_object_or_404(Listing, id=listing_id)
-    return render(request, 'auctions/listing_detail.html', {'listing': listing})
+def listing_detail(request, pk):
+    listing = get_object_or_404(Listing, id=pk)
+    bid_form = BidForm()
+    return render(request, 'auctions/listing_detail.html', {'listing': listing, 'bid_form': bid_form})

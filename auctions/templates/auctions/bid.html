@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+
+{% block main %}
+<h2>Bid Placed Successfully</h2>
+
+<article>
+    <section>
+        <p>Your bid of ${{ bid.amount }} on {{ bid.listing.title }} has been placed successfully.</p>
+        <a href="{% url 'listing-detail' pk=bid.listing.id %}">Back to Listing</a>
+    </section>
+</article>
+{% endblock %}

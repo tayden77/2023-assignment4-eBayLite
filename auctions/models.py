@@ -35,7 +35,7 @@ class Bid(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.amount
+        return str(self.amount)
 
 
 class Comment(models.Model):

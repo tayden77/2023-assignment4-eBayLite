@@ -2,20 +2,39 @@
 
 {% block main %}
 <section>
-    <h2>{{ listing.title }}</h2>
-    <p>{{ listing.creator }}</p>
-    <p>{{ listing.description }}</p>
-    <p>{{ listing.category }}</p>
-    <p>Starting Bid: ${{ listing.starting_bid }}</p>
-    <p>Current Bid: ${{ listing.current_bid }}</p>
-    {% if listing.image %}
-        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" width="75%">
-    {% else %}
-        <p>No image available</p>
+    <header>
+        <h2>{{ listing.title }}</h2>
+        <p>By {{ listing.creator }}</p>
+    </header>
+    <article>
+        <p>{{ listing.description }}</p>
+        <p>Category: {{ listing.category }}</p>
+        <p>Starting Bid: ${{ listing.starting_bid }}</p>
+        <p>Current Bid: ${{ listing.current_bid }}</p>
+        {% if listing.image %}
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
+        {% else %}
+            <p>No image available</p>
+        {% endif %}
+    </article>
+    {% if listing.is_active and request.user.is_authenticated %}
+    <aside>
+        <form method="post" action="{% url 'place-bid' pk=listing.id %}">
+            {% csrf_token %}
+            {{ bid_form.as_p }}
+            <button type="submit">Place Bid</button>
+        </form>
+    </aside>
     {% endif %}
-    {% if user.is_authenticated and listing.creator == user %}
+    {% if request.user.is_authenticated and listing.creator == request.user %}
+    <footer>
+        <form method="post" action="{% url 'close-bidding' listing.id %}">
+            {% csrf_token %}
+            <input type="submit" value="Close Bidding">
+        </form>
         <a href="{% url 'listing-edit' pk=listing.pk %}">Edit</a>
         <a href="{% url 'listing-delete' pk=listing.pk %}">Delete</a>
+    </footer>
     {% endif %}
 </section>
 {% endblock %}

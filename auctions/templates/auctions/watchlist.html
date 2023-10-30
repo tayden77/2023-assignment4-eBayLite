@@ -4,7 +4,7 @@
     <h2>Your Watchlist</h2>
     <ul>
         {% for listing in watchlist_items %}
-            <li><a href="{% url 'listing-detail' pk=listing.pk %}">{{ listing.title }}</a></li>
+            <li><a href="{% url 'listing-detail' listing.id %}">{{ listing.title }}</a></li>
         {% empty %}
             <li>No items in watchlist.</li>
         {% endfor %}

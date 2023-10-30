@@ -1,17 +1,82 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+body > header {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #bdc3c7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body > header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
-  padding: 14px 18px;
+  align-items: center;
 }
 
-body > header { 
-  padding: 0 0.5rem .75rem 0.5rem;
+nav span {
+  display: flex;
+  align-items: center;
 }
 
-body {
-  grid-template-columns: 10% 80% 10%;
+nav a {
+  color: #ecf0f1;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s;
+}
+
+nav a:hover {
+  background-color: #34495e;
+  border-radius: 4px;
+}
+
+main {
+  background-color: #fff;
+  margin: 2rem 10%;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .form-control {
   width: 50%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+}
+
+/* Adding some styles for dropdown */
+select {
+  padding: 0.5rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  background-color: #ecf0f1;
+  color: #333;
+}
+
+/* OR if you decide to use Bootstrap Dropdown */
+.dropdown-toggle {
+  background-color: #ecf0f1;
+  border-color: #bdc3c7;
+}
+
+.dropdown-item {
+  transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: #bdc3c7;
 }

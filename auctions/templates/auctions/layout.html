@@ -15,7 +15,12 @@
             <nav>
                 <span>
                     <a href="{% url 'index' %}">Active Listings</a>
-                    <a href="#">Categories</a>
+                    <select onchange="location = this.value;">
+                        <option value="" selected>Select a category</option>
+                        {% for category in categories %}
+                            <option value="{% url 'category-detail' category.id %}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
                     <a href="{% url 'watchlist' %}">Watchlist</a>
                     <a href="{% url 'create-listing' %}">Create Listing</a>
                 </span>

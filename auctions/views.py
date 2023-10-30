@@ -39,28 +39,26 @@ class ListingDeleteView(DeleteView):
 
     def get_queryset(self):
         return self.model.objects.filter(creator=self.request.user) 
-    
 
-class PlaceBidView(View):
-    def post(self, request, pk):
-        logging.info(f'Listing ID: {pk}')
-        listing = get_object_or_404(Listing, pk=pk)
-        if not listing.is_active:
-                messages.error(request, 'Bidding on this item is closed')
-                print(form.errors)
-                return redirect('listing-detail', pk=listing.id)
-        form = BidForm(request.POST, initial={'listing_id': pk})
+@login_required
+def place_bid(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+    if request.method == 'POST':
+        form = BidForm(request.POST)
         if form.is_valid():
             bid = form.save(commit=False)
-            bid.listing = listing
             bid.user = request.user
-            bid.save()
-            return redirect('place-bid', pk=listing.id)
-        else:
-            messages.error(request, 'There was a problem with your bid entry. Please try again')
-            
-            return render(request, 'listing_detail.html', {'form': form})
-        
+            bid.listing = listing
+            if bid.amount > listing.current_bid:
+                listing.current_bid = bid.amount
+                listing.save()
+                bid.save()
+                return redirect('listing-detail', pk=pk)  # Assuming your listing detail url is named 'listing-detail'
+            else:
+                form.add_error('amount', 'Bid must be higher than the current bid')
+    else:
+        form = BidForm()
+    return render(request, 'auctions/place_bid.html', {'form': form, 'listing': listing})        
 
 class CloseBiddingView(View):
     def post(self, request, pk):
@@ -75,8 +73,21 @@ class CloseBiddingView(View):
 @login_required    
 def watchlist_view(request):
     user = request.user
-    watchlist_items = Watchlist.objects.filter(user=user)
+    try:
+        watchlist = Watchlist.objects.get(user=user)
+        watchlist_items = watchlist.listings.all()
+    except Watchlist.DoesNotExist:
+        watchlist_items = []
     return render(request, 'auctions/watchlist.html', {'watchlist_items': watchlist_items})
+
+def categories_view(request):
+    categories = Category.objects.all()
+    return render(request, 'auctions/categories.html', {'categories': categories})
+
+def category_detail_view(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    listings = Listing.objects.filter(category=category, is_active=True)
+    return render(request, 'auctions/category_detail.html', {'category': category, 'listings': listings})
 
 @login_required
 def add_to_watchlist(request, pk):

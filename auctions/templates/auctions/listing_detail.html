@@ -17,7 +17,14 @@
         <p>{{ listing.description }}</p>
         <p>Category: {{ listing.category }}</p>
         <p>Starting Bid: ${{ listing.starting_bid }}</p>
-        <p>Current Bid: ${{ listing.current_bid }}</p>
+        {% with highest_bid=listing.highest_bid %}
+            {% if highest_bid %}
+                <p>Current Bid: ${{ highest_bid.amount }} by {{ highest_bid.user.username }}</p>
+            {% else %}
+                <p>No bids yet.</p>
+            {% endif %}
+        {% endwith %}
+        <p>Status: {{ listing.is_active|yesno:"Active,Closed" }}</p>
         {% if listing.image %}
             <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
         {% else %}
@@ -40,5 +47,27 @@
         </aside>
         {% endif %}
     {% endif %}
+    <section>
+        <h3>Bid History</h3>
+        <ul>
+            {% for bid in bids %}
+                <li>{{ bid.user.username }} bid ${{ bid.amount }} on {{ bid.timestamp }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    
+    <section>
+        <h3>Comments</h3>
+        <ul>
+            {% for comment in comments %}
+                <li>{{ comment.user.username }}: "{{ comment.text }}" <small>-- {{ comment.timestamp }}</small></li>
+            {% endfor %}
+        </ul>
+    </section>
+    
+    <section>
+        <h3>Add Comment</h3>
+        <a href="{% url 'create-comment' pk=listing.pk %}" class="btn btn-primary">Comment</a>
+    </section>
 </section>
 {% endblock %}

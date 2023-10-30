@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import User, Listing, Category, Bid, Watchlist
-from .forms import ListingForm, BidForm
+from .models import User, Listing, Category, Bid, Watchlist, Comment
+from .forms import ListingForm, BidForm, CommentForm
 import logging
 
 def index(request):
@@ -53,7 +53,7 @@ def place_bid(request, pk):
                 listing.current_bid = bid.amount
                 listing.save()
                 bid.save()
-                return redirect('listing-detail', pk=pk)  # Assuming your listing detail url is named 'listing-detail'
+                return redirect('listing-detail', pk=pk)
             else:
                 form.add_error('amount', 'Bid must be higher than the current bid')
     else:
@@ -62,7 +62,7 @@ def place_bid(request, pk):
 
 class CloseBiddingView(View):
     def post(self, request, pk):
-        listing = get_object_or_404(Listing, id=pk)
+        listing = get_object_or_404(Listing, pk=pk)
         if not request.user.is_authenticated or request.user != listing.creator:
             messages.error(request, 'You are not authorized. Please create an account or log-in.')
             return redirect('listing-detail', pk=listing.id)
@@ -173,6 +173,42 @@ def create_listing(request):
     return render(request, 'auctions/create_listing.html', {'form': form})
 
 def listing_detail(request, pk):
-    listing = get_object_or_404(Listing, id=pk)
+    listing = get_object_or_404(Listing, pk=pk)
+    comments = Comment.objects.filter(listing=listing)
+    bids = Bid.objects.filter(listing=listing).order_by('-timestamp')
     bid_form = BidForm()
-    return render(request, 'auctions/listing_detail.html', {'listing': listing, 'bid_form': bid_form})
+    comment_form = CommentForm()  # initialize comment form
+
+    if request.method == "POST" and 'submit_comment' in request.POST:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.listing = listing
+            comment.user = request.user
+            comment.save()
+            return redirect('listing-detail', pk=pk)
+
+    context = {
+        'listing': listing,
+        'bid_form': bid_form,
+        'bids': bids,  # pass bids to template
+        'comments': comments,
+        'comment_form': comment_form  # pass comment form to template
+    }
+    return render(request, 'auctions/listing_detail.html', context)
+
+@login_required
+def create_comment(request, pk):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.listing = get_object_or_404(Listing, id=pk)
+            comment.user = request.user
+            comment.save()
+            return redirect('listing-detail', pk=pk)
+        else:
+            return render(request, 'auctions/comment.html', {'form': form, 'listing_id': pk})
+    else:
+        form = CommentForm()
+        return render(request, 'auctions/comment.html', {'form': form, 'listing_id': pk})

@@ -24,6 +24,9 @@ class Listing(models.Model):
     is_active = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
 
+    def highest_bid(self):
+        return Bid.objects.filter(listing=self).order_by('-amount').first()
+    
     def __str__(self):
         return self.title
 
@@ -45,7 +48,7 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.timestamp
+        return self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
 class Category(models.Model):
     name = models.CharField(max_length=255)

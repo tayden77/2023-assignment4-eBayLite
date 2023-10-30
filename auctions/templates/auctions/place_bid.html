@@ -1,5 +1,7 @@
 {% extends "auctions/layout.html" %}
 
+{% extends "auctions/layout.html" %}
+
 {% block main %}
 
 <div class="container">
@@ -13,8 +15,8 @@
                     <form method="post" class="needs-validation" novalidate>
                         {% csrf_token %}
                         <div class="mb-3">
-                            {{ form.bid_amount.label_tag }} {# Renders the label #}
-                            {{ form.bid_amount }} {# Renders the field #}
+                            {{ form.bid_amount.label_tag }}
+                            {{ form.bid_amount|add_class:"form-control" }}
                             <div class="invalid-feedback">
                                 Please provide a valid bid amount.
                             </div>

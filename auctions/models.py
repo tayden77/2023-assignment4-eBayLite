@@ -55,4 +55,7 @@ class Category(models.Model):
 
 class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    listings = models.ManyToManyField(Listing, related_name='watchlists')
+
+    def __str__(self):
+        return f"{self.user.username}'s Watchlist"

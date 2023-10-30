@@ -1,13 +1,14 @@
 from typing import Any
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import User, Listing, Category, Bid
+from .models import User, Listing, Category, Bid, Watchlist
 from .forms import ListingForm, BidForm
 import logging
 
@@ -43,7 +44,7 @@ class ListingDeleteView(DeleteView):
 class PlaceBidView(View):
     def post(self, request, pk):
         logging.info(f'Listing ID: {pk}')
-        listing = get_object_or_404(Listing, id=pk)
+        listing = get_object_or_404(Listing, pk=pk)
         if not listing.is_active:
                 messages.error(request, 'Bidding on this item is closed')
                 print(form.errors)
@@ -70,6 +71,27 @@ class CloseBiddingView(View):
         listing.is_active = False
         listing.save()
         return redirect('listing-detail', pk=listing.id)
+    
+@login_required    
+def watchlist_view(request):
+    user = request.user
+    watchlist_items = Watchlist.objects.filter(user=user)
+    return render(request, 'auctions/watchlist.html', {'watchlist_items': watchlist_items})
+
+@login_required
+def add_to_watchlist(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+    watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    watchlist.listings.add(listing)
+    return redirect('listing-detail', pk=pk)
+
+@login_required
+def remove_from_watchlist(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+    watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    if not created:
+        watchlist.listings.remove(listing)
+    return redirect('listing-detail', pk=pk)
 
 def login_view(request):
     if request.method == "POST":

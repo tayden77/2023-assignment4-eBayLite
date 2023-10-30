@@ -5,6 +5,13 @@
     <header>
         <h2>{{ listing.title }}</h2>
         <p>By {{ listing.creator }}</p>
+        {% if request.user.is_authenticated %}
+            {% if listing in request.user.watchlist.all %}
+                <a href="{% url 'remove-from-watchlist' pk=listing.pk %}">Remove from Watchlist</a>
+            {% else %}
+                <a href="{% url 'add-to-watchlist' pk=listing.pk %}">Add to Watchlist</a>
+            {% endif %}
+        {% endif %}
     </header>
     <article>
         <p>{{ listing.description }}</p>

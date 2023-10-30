@@ -59,7 +59,15 @@ def place_bid(request, pk):
                 form.add_error('amount', 'Bid must be higher than the current bid')
     else:
         form = BidForm()
-    return render(request, 'auctions/place_bid.html', {'form': form, 'listing': listing})        
+    return render(
+        request, 
+        'auctions/place_bid.html', 
+        {
+            'form': form, 
+            'listing': listing, 
+            'current_bid_amount': listing.current_bid 
+        }
+    )
 
 class CloseBiddingView(View):
     def post(self, request, pk):

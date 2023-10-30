@@ -1,6 +1,6 @@
 from django import forms
-from django.shortcuts import get_object_or_404
 from .models import Listing, Bid, Comment
+
 
 class BidForm(forms.ModelForm):
     class Meta:
@@ -10,6 +10,7 @@ class BidForm(forms.ModelForm):
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter your bid'}),
         }
 
+
 class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
@@ -17,7 +18,8 @@ class ListingForm(forms.ModelForm):
         widgets = {
             'image': forms.ClearableFileInput(attrs={'multiple': True}),
         }
-        
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

@@ -2,16 +2,16 @@ from typing import Any
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError, models
-from django.http import HttpResponse, HttpResponseRedirect
+from django.db import IntegrityError
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import UpdateView, DeleteView
 from .models import User, Listing, Category, Bid, Watchlist, Comment
 from .forms import ListingForm, BidForm, CommentForm
-import logging
 
+# Index page view
 def index(request):
     listings = Listing.objects.filter(is_active=True)
     return render(request, "auctions/index.html", {'listings': listings})
@@ -71,7 +71,7 @@ class CloseBiddingView(View):
         listing.save()
         return redirect('listing-detail', pk=listing.id)
     
-# View to add a listing to user's watchlist
+# Views to add and remove listings to and from the watchlist as well as load user's watchlist
 @login_required    
 def watchlist_view(request):
     user = request.user
@@ -81,12 +81,6 @@ def watchlist_view(request):
     except Watchlist.DoesNotExist:
         watchlist_items = []
     return render(request, 'auctions/watchlist.html', {'watchlist_items': watchlist_items})
-
-# Views to 
-def category_detail_view(request, category_id):
-    category = get_object_or_404(Category, pk=category_id)
-    listings = Listing.objects.filter(category=category, is_active=True)
-    return render(request, 'auctions/category_detail.html', {'category': category, 'listings': listings})
 
 @login_required
 def add_to_watchlist(request, pk):
@@ -103,6 +97,13 @@ def remove_from_watchlist(request, pk):
         watchlist.listings.remove(listing)
     return redirect('listing-detail', pk=pk)
 
+# View to access detailed category page
+def category_detail_view(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    listings = Listing.objects.filter(category=category, is_active=True)
+    return render(request, 'auctions/category_detail.html', {'category': category, 'listings': listings})
+
+# Login, Logout, and Register views
 def login_view(request):
     if request.method == "POST":
 
@@ -154,7 +155,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
     
-    
+# Views to create listings and view a detailed listing page    
 def create_listing(request):
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES)
@@ -196,6 +197,7 @@ def listing_detail(request, pk):
     }
     return render(request, 'auctions/listing_detail.html', context)
 
+# View to create a comment on a listing
 @login_required
 def create_comment(request, pk):
     if request.method == "POST":

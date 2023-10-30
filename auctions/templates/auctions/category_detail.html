@@ -1,9 +1,23 @@
 {% extends "auctions/layout.html" %}
 {% block main %}
-<h2>{{ category.name }}</h2>
-<ul>
-    {% for listing in listings %}
-        <li><a href="{% url 'listing-detail' listing.id %}">{{ listing.title }}</a></li>
-    {% endfor %}
-</ul>
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ category.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for listing in listings %}
+                            <li class="list-group-item">
+                                <a href="{% url 'listing-detail' listing.id %}" class="text-decoration-none">{{ listing.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

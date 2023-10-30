@@ -1,10 +1,30 @@
 {% extends "auctions/layout.html" %}
 
 {% block main %}
-<h2>Place a Bid on {{ listing.title }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Place Bid</button>
-</form>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Place a Bid on {{ listing.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.bid_amount.label_tag }} {# Renders the label #}
+                            {{ form.bid_amount }} {# Renders the field #}
+                            <div class="invalid-feedback">
+                                Please provide a valid bid amount.
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Place Bid</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

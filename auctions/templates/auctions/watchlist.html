@@ -1,12 +1,26 @@
 {% extends "auctions/layout.html" %}
 
 {% block main %}
-    <h2>Your Watchlist</h2>
-    <ul>
-        {% for listing in watchlist_items %}
-            <li><a href="{% url 'listing-detail' listing.id %}">{{ listing.title }}</a></li>
-        {% empty %}
-            <li>No items in watchlist.</li>
-        {% endfor %}
-    </ul>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Your Watchlist</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for listing in watchlist_items %}
+                            <li class="list-group-item">
+                                <a href="{% url 'listing-detail' listing.id %}">{{ listing.title }}</a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No items in watchlist.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

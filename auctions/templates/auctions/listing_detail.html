@@ -1,73 +1,95 @@
 {% extends "auctions/layout.html" %}
 
 {% block main %}
-<section>
-    <header>
-        <h2>{{ listing.title }}</h2>
-        <p>By {{ listing.creator }}</p>
-        {% if request.user.is_authenticated %}
-            {% if listing in request.user.watchlist.all %}
-                <a href="{% url 'remove-from-watchlist' pk=listing.pk %}">Remove from Watchlist</a>
-            {% else %}
-                <a href="{% url 'add-to-watchlist' pk=listing.pk %}">Add to Watchlist</a>
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>{{ listing.title }}</h2>
+                    <p>By {{ listing.creator }}</p>
+                    {% if request.user.is_authenticated %}
+                        {% if listing in request.user.watchlist.all %}
+                            <a href="{% url 'remove-from-watchlist' pk=listing.pk %}" class="btn btn-secondary">Remove from Watchlist</a>
+                        {% else %}
+                            <a href="{% url 'add-to-watchlist' pk=listing.pk %}" class="btn btn-primary">Add to Watchlist</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <p>{{ listing.description }}</p>
+                    <p>Category: {{ listing.category }}</p>
+                    <p>Starting Bid: ${{ listing.starting_bid }}</p>
+                    {% with highest_bid=listing.highest_bid %}
+                        {% if highest_bid %}
+                            <p>Current Bid: ${{ highest_bid.amount }} by {{ highest_bid.user.username }}</p>
+                        {% else %}
+                            <p>No bids yet.</p>
+                        {% endif %}
+                    {% endwith %}
+                    <p>Status: {{ listing.is_active|yesno:"Active,Closed" }}</p>
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="img-fluid">
+                    {% else %}
+                        <p>No image available</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Bid History</h3>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for bid in bids %}
+                        <li class="list-group-item">{{ bid.user.username }} bid ${{ bid.amount }} on {{ bid.timestamp }}</li>
+                    {% empty %}
+                        <li class="list-group-item">No bids yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Comments</h3>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for comment in comments %}
+                        <li class="list-group-item">{{ comment.user.username }}: "{{ comment.text }}" <small>-- {{ comment.timestamp }}</small></li>
+                    {% empty %}
+                        <li class="list-group-item">No comments yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="mb-4">
+                <h3>Add Comment</h3>
+                <a href="{% url 'create-comment' pk=listing.pk %}" class="btn btn-primary">Comment</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {% if request.user.is_authenticated and listing.creator == request.user %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="post" action="{% url 'close-bidding' listing.id %}">
+                        {% csrf_token %}
+                        <input type="submit" value="Close Bidding" class="btn btn-danger btn-block">
+                    </form>
+                    <a href="{% url 'listing-edit' pk=listing.pk %}" class="btn btn-warning btn-block mt-2">Edit</a>
+                    <a href="{% url 'listing-delete' pk=listing.pk %}" class="btn btn-danger btn-block mt-2">Delete</a>
+                </div>
+            </div>
+            {% elif request.user.is_authenticated and listing.creator != request.user %}
+                {% if listing.is_active %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <a href="{% url 'place-bid' listing.id %}" class="btn btn-primary btn-block">Place a Bid</a>
+                    </div>
+                </div>
+                {% endif %}
             {% endif %}
-        {% endif %}
-    </header>
-    <article>
-        <p>{{ listing.description }}</p>
-        <p>Category: {{ listing.category }}</p>
-        <p>Starting Bid: ${{ listing.starting_bid }}</p>
-        {% with highest_bid=listing.highest_bid %}
-            {% if highest_bid %}
-                <p>Current Bid: ${{ highest_bid.amount }} by {{ highest_bid.user.username }}</p>
-            {% else %}
-                <p>No bids yet.</p>
-            {% endif %}
-        {% endwith %}
-        <p>Status: {{ listing.is_active|yesno:"Active,Closed" }}</p>
-        {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
-        {% else %}
-            <p>No image available</p>
-        {% endif %}
-    </article>
-    {% if request.user.is_authenticated and listing.creator == request.user %}
-    <footer>
-        <form method="post" action="{% url 'close-bidding' listing.id %}">
-            {% csrf_token %}
-            <input type="submit" value="Close Bidding">
-        </form>
-        <a href="{% url 'listing-edit' pk=listing.pk %}">Edit</a>
-        <a href="{% url 'listing-delete' pk=listing.pk %}">Delete</a>
-    </footer>
-    {% elif request.user.is_authenticated and listing.creator != request.user %}
-        {% if listing.is_active %}
-        <aside>
-                <a href="{% url 'place-bid' listing.id %}" class="btn btn-primary">Place a Bid</a>
-        </aside>
-        {% endif %}
-    {% endif %}
-    <section>
-        <h3>Bid History</h3>
-        <ul>
-            {% for bid in bids %}
-                <li>{{ bid.user.username }} bid ${{ bid.amount }} on {{ bid.timestamp }}</li>
-            {% endfor %}
-        </ul>
-    </section>
-    
-    <section>
-        <h3>Comments</h3>
-        <ul>
-            {% for comment in comments %}
-                <li>{{ comment.user.username }}: "{{ comment.text }}" <small>-- {{ comment.timestamp }}</small></li>
-            {% endfor %}
-        </ul>
-    </section>
-    
-    <section>
-        <h3>Add Comment</h3>
-        <a href="{% url 'create-comment' pk=listing.pk %}" class="btn btn-primary">Comment</a>
-    </section>
-</section>
+        </div>
+    </div>
+</div>
 {% endblock %}

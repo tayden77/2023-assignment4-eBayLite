@@ -16,7 +16,7 @@ def index(request):
     listings = Listing.objects.filter(is_active=True)
     return render(request, "auctions/index.html", {'listings': listings})
 
-
+# Views to update and delete existing listings
 class ListingUpdateView(UpdateView):
     model = Listing
     form_class = ListingForm
@@ -40,6 +40,7 @@ class ListingDeleteView(DeleteView):
     def get_queryset(self):
         return self.model.objects.filter(creator=self.request.user) 
 
+# Views to place bids and close bidding on user owned items
 @login_required
 def place_bid(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
@@ -70,6 +71,7 @@ class CloseBiddingView(View):
         listing.save()
         return redirect('listing-detail', pk=listing.id)
     
+# View to add a listing to user's watchlist
 @login_required    
 def watchlist_view(request):
     user = request.user
@@ -80,10 +82,7 @@ def watchlist_view(request):
         watchlist_items = []
     return render(request, 'auctions/watchlist.html', {'watchlist_items': watchlist_items})
 
-def categories_view(request):
-    categories = Category.objects.all()
-    return render(request, 'auctions/categories.html', {'categories': categories})
-
+# Views to 
 def category_detail_view(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
     listings = Listing.objects.filter(category=category, is_active=True)

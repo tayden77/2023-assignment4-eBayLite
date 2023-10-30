@@ -24,15 +24,6 @@
             <p>No image available</p>
         {% endif %}
     </article>
-    {% if listing.is_active and request.user.is_authenticated %}
-    <aside>
-        <form method="post" action="{% url 'place-bid' pk=listing.id %}">
-            {% csrf_token %}
-            {{ bid_form.as_p }}
-            <a href="{% url 'place-bid' listing.id %}" class="btn btn-primary">Place a Bid</a>
-        </form>
-    </aside>
-    {% endif %}
     {% if request.user.is_authenticated and listing.creator == request.user %}
     <footer>
         <form method="post" action="{% url 'close-bidding' listing.id %}">
@@ -42,6 +33,12 @@
         <a href="{% url 'listing-edit' pk=listing.pk %}">Edit</a>
         <a href="{% url 'listing-delete' pk=listing.pk %}">Delete</a>
     </footer>
+    {% elif request.user.is_authenticated and listing.creator != request.user %}
+        {% if listing.is_active %}
+        <aside>
+                <a href="{% url 'place-bid' listing.id %}" class="btn btn-primary">Place a Bid</a>
+        </aside>
+        {% endif %}
     {% endif %}
 </section>
 {% endblock %}

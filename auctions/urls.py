@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ListingUpdateView, ListingDeleteView, PlaceBidView, CloseBiddingView
+from .views import ListingUpdateView, ListingDeleteView, CloseBiddingView
 from . import views
 
 urlpatterns = [

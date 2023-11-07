@@ -8,7 +8,7 @@
             <div class="card h-100">
                 {% if listing.image %}
                     <a href="{% url 'listing-detail' pk=listing.id %}">
-                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="width:100%; height:auto;">
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="width:20%; height:auto;">
                     </a>
                 {% endif %}
                 <div class="card-body">

@@ -58,7 +58,6 @@ main {
   border-radius: 4px;
 }
 
-/* Adding some styles for dropdown */
 select {
   padding: 0.5rem;
   border: 1px solid #bdc3c7;
@@ -67,16 +66,16 @@ select {
   color: #333;
 }
 
-/* OR if you decide to use Bootstrap Dropdown */
-.dropdown-toggle {
-  background-color: #ecf0f1;
-  border-color: #bdc3c7;
+.navbar-dark .navbar-nav .nav-item.dropdown .dropdown-menu {
+  background-color: #f8f9fa;
+  color: #343a40;
 }
 
-.dropdown-item {
-  transition: background-color 0.3s;
+.navbar-dark .navbar-nav .nav-item.dropdown .dropdown-menu .dropdown-item {
+  color: #343a40;
 }
 
-.dropdown-item:hover {
-  background-color: #bdc3c7;
+.navbar-dark .navbar-nav .nav-item.dropdown .dropdown-menu .dropdown-item:hover {
+  background-color: #007bff;
+  color: #ffffff;
 }

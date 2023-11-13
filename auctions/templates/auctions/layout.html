@@ -12,49 +12,49 @@
     <link rel="stylesheet" href="{% static 'auctions/uaa490styles.css' %}" >
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'index' %}">Auctions "R" Us</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Categories
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        {% for category in categories %}
-                            <li><a class="dropdown-item" href="{% url 'category-detail' category.id %}">{{ category.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'create-listing' %}">Create Listing</a>
-                </li>
-            </ul>
-            <span class="navbar-text">
-                {% if user.is_authenticated %}
-                    Welcome <strong>{{ user.username }}!</strong>
-                    <a href="{% url 'logout' %}" class="nav-link d-inline p-0">Log Out</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-link d-inline p-0">Log In</a>
-                    <a href="{% url 'register' %}" class="nav-link d-inline p-0">Register</a>
-                {% endif %}
-            </span>
-        </div>
-    </nav>
-</header>
-<main class="container my-4">
-    {% block main %}
-    {% endblock %}
-</main>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="{% url 'index' %}">Auctions "R" Us</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {% for category in categories %}
+                                <li><a class="dropdown-item" href="{% url 'category-detail' category.id %}">{{ category.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create-listing' %}">Create Listing</a>
+                    </li>
+                </ul>
+                <span class="navbar-text">
+                    {% if user.is_authenticated %}
+                        Welcome <strong>{{ user.username }}!</strong>
+                        <a href="{% url 'logout' %}" class="nav-link d-inline p-0">Log Out</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link d-inline p-0">Log In</a>
+                        <a href="{% url 'register' %}" class="nav-link d-inline p-0">Register</a>
+                    {% endif %}
+                </span>
+            </div>
+        </nav>
+    </header>
+    <main class="container my-4">
+        {% block main %}
+        {% endblock %}
+    </main>
 </body>
 </html>

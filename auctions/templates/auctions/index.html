@@ -3,25 +3,55 @@
 {% block main %}
 <h2 class="mb-4">Active Listings</h2>
 <div class="row row-cols-1 row-cols-md-2 g-4">
-    {% for listing in listings %}
-        <div class="col">
-            <div class="card h-100">
-                {% if listing.image %}
-                    <a href="{% url 'listing-detail' pk=listing.id %}">
-                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="width:20%; height:auto;">
-                    </a>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a href="{% url 'listing-detail' pk=listing.id %}">{{ listing.title }}</a>
-                    </h5>
-                    <p class="card-text">{{ listing.description }}</p>
-                    <p class="card-text">Starting Bid: ${{ listing.starting_bid }}</p>
+    {% for listing in page_obj %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if listing.image %}
+                        <a href="{% url 'listing-detail' pk=listing.id %}">
+                            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img-top" style="width:20%; height:auto;">
+                        </a>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'listing-detail' pk=listing.id %}">{{ listing.title }}</a>
+                        </h5>
+                        <p class="card-text">{{ listing.description }}</p>
+                        <p class="card-text">Starting Bid: ${{ listing.starting_bid }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
     {% empty %}
-        <p class="col">No active listings found...</p>
+            <p class="col">No active listings found...</p>
     {% endfor %}
+</div>
+<div>
+    {{ page_obj }}
+</div>
+<div>
+    Has Previous: {{ page_obj.has_previous }}
+</div>
+<div>
+    Has Next: {{ page_obj.has_next }}
+</div>
+<div>
+    Current Page: {{ page_obj.number }}
+</div>
+<div>
+    Number of Pages: {{ page_obj.paginator.num_pages }}
+</div>
+<div class="pagination">
+    <span class="pages">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </span>
 </div>
 {% endblock %}

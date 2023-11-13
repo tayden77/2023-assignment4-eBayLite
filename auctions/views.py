@@ -10,11 +10,15 @@ from django.views import View
 from django.views.generic.edit import UpdateView, DeleteView
 from .models import User, Listing, Category, Bid, Watchlist, Comment
 from .forms import ListingForm, BidForm, CommentForm
+from django.core.paginator import Paginator
 
 # Index page view
 def index(request):
     listings = Listing.objects.filter(is_active=True)
-    return render(request, "auctions/index.html", {'listings': listings})
+    p = Paginator(listings, 4)
+    page_number = request.GET.get('page')
+    page_obj = p.get_page(page_number)
+    return render(request, "auctions/index.html", {'listings': listings, 'page_obj': page_obj})
 
 # Views to update and delete existing listings
 class ListingUpdateView(UpdateView):

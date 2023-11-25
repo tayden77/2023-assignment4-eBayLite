@@ -18,5 +18,4 @@ urlpatterns = [
     path('listing/<int:pk>/remove_from_watchlist/', views.remove_from_watchlist, name='remove-from-watchlist'),
     path('category/<int:category_id>/', views.category_detail_view, name='category-detail'),
     path('listing/<int:pk>/comment/', views.create_comment, name='create-comment')
-
 ]
